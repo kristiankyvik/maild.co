@@ -5,7 +5,7 @@
   "description": "This extension makes embedding emails beatifull",
   "version": "1.0",
   "background": {
-      "page": "background.html"
+      "scripts": ["jquery-2.1.1.min.js", "backgroundscript.js"]
     }, 
   "page_action": {
     "default_icon": "icon.png"
@@ -14,7 +14,17 @@
   "content_scripts": [
     {
       "matches": ["https://mail.google.com/*"],
-      "js": ["jquery-2.1.1.min.js", "contentscript.js"]
+      "js": ["jquery-2.1.1.min.js", "vex.combined.min.js", "contentscript.js"],
+      "css": [    
+        "style/vex-theme-os.css",
+        "style/vex.css"
+        ]
     }
+  ],
+  "web_accessible_resources": [
+    "style/vex-theme-os.css",
+    "style/vex.css"
   ]
 }
+
+
