@@ -1,13 +1,72 @@
+
+
+
+var createJSON = function(email){
+  var jsonData = {};
+  var senderInfo = $(email).find('.gD');
+  var senderName = senderInfo.attr('name')
+  var senderEmail = senderInfo.attr('email');
+  jsonData["from"] = {
+                    "name" : senderName,
+                    "email" : senderEmail     
+                    };
+
+  var receiversInfo = $(email).find('.g2');
+  jsonData["to"] = [];
+  receiversInfo.each(function(){
+    var receiverName = $(this).attr('name');
+    var receiverEmail = $(this).attr('email');
+    jsonData["to"].push({
+                            "name" : receiverName,
+                            "email" : receiverEmail
+                          });
+  });
+
+  var ccInfo = $(email).find('.g2.ac2'); 
+  jsonData["cc"] = [];
+  console.log(ccInfo);
+  ccInfo.each(function(){
+    var ccName = $(this).attr('name');
+    var ccEmail = $(this).attr('email');
+    jsonData["cc"].push({
+                            "name" : ccName,
+                            "email" : ccEmail
+                          });
+  });
+
+  var emailSubject = $("title")[0].innerHTML.split("-")[0].trim();
+  console.log(emailSubject);
+  jsonData["subject"] = emailSubject;
+
+  var emailBody = $(email).find('.a3s')[0].innerHTML;
+  console.log(email);
+  console.log(emailBody);
+  jsonData["body"] = emailBody;
+
+  var dateString = $(email).find('.g3').attr("title") + " UTC";
+  var unformattedDate = new Date(dateString) ;
+  var formattedDate = unformattedDate.toISOString();
+  jsonData["dateAndTime"] = formattedDate;
+  console.log(jsonData);
+  return jsonData;
+
+
+
+};
+
+
+
 var addRedirectToButton = function(button){
   button.addEventListener("click", function(e){
-    console.log("maldrButtonClicked!!!!!!");
-    chrome.runtime.sendMessage({greeting: "maildrButtonClicked"}, function(response) {
-    console.log(response.farewell);
-    });
+    console.log("maildButtonClicked!!!!!!");
+    console.log(e.target);
+    var email = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+    console.log(email);
+    var JSONObject = createJSON(email);
+    sendJSONToBackground(JSONObject);
   })
   return button;
 };
-
 
 var setAttributes = function (el, attrs) {
   for(var key in attrs) {
@@ -16,24 +75,24 @@ var setAttributes = function (el, attrs) {
 };
 
 
-var createMaildrButton = function(){
+var createMaildButton = function(){
   var innerMarkup = '<img class="T-I-J3" role="button" src="https://theblockheads.net/forum/attachment.php?attachmentid=4664&d=1375737045" alt="">'
-  var maildrButton = document.createElement('div');
-  setAttributes(maildrButton, {'id' : "maildr-button", "class" : "T-I J-J5-Ji T-I-Js-IF aaq T-I-ax7 L3 T-I-Zf-aw2", "role" : "button", "tabindex" : "0", "data-tooltip" : "Create a mailder", "aria-label" : "Maildr", "style" : "-webkit-user-select: none;"});
-  maildrButton.innerHTML = innerMarkup;
-  maildrButton = addRedirectToButton(maildrButton);
-  return maildrButton;
+  var maildButton = document.createElement('div');
+  setAttributes(maildButton, {'id' : "maild-button", "class" : "T-I J-J5-Ji T-I-Js-IF aaq T-I-ax7 L3 T-I-Zf-aw2", "role" : "button", "tabindex" : "0", "data-tooltip" : "Create a mailder", "aria-label" : "Maild", "style" : "-webkit-user-select: none;"});
+  maildButton.innerHTML = innerMarkup;
+  maildButton = addRedirectToButton(maildButton);
+  return maildButton;
 };
 
 
 var insertButtons = function(){
   var bars = document.getElementsByClassName("gH acX");
-  var maildrButton = createMaildrButton();
+  var maildButton = createMaildButton();
   for(var i = 0; i < bars.length; i++) {
     var element = bars.item(i);
     if (!element.hasAttribute("data-maild-button-added")) {
       element.setAttribute("data-maild-button-added", "true");
-      element.insertBefore(maildrButton, element.firstChild);
+      element.insertBefore(maildButton, element.firstChild);
     }
   }
 };
@@ -45,18 +104,41 @@ var checkForEmailBars = function(){
     return;
   }
   else{
-    console.log("found bards!!!");
     insertButtons();
   }
 };
 
-
-
-
+var checkDateTime = function(){
+  console.log("empeze ========")
+  if ( !Date.prototype.toISOString ) {
+    ( function() {
+      
+      function pad(number) {
+        if ( number < 10 ) {
+          return '0' + number;
+        }
+        return number;
+      }
+   
+      Date.prototype.toISOString = function() {
+        return this.getUTCFullYear() +
+          '-' + pad( this.getUTCMonth() + 1 ) +
+          '-' + pad( this.getUTCDate() ) +
+          'T' + pad( this.getUTCHours() ) +
+          ':' + pad( this.getUTCMinutes() ) +
+          ':' + pad( this.getUTCSeconds() ) +
+          '.' + (this.getUTCMilliseconds() / 1000).toFixed(3).slice(2, 5) +
+          'Z';
+      };
+    
+    }() );
+  }
+  console.log("acabe ========");
+};
 var init = function(){
+  checkDateTime();
   console.log("hi from content script!");
   setInterval(function() {
-    console.log("checking again!");
     checkForEmailBars(); 
     }, 500);
   }
