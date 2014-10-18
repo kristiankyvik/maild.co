@@ -1,0 +1,14 @@
+{
+  "manifest_version": 2,
+
+  "name": "Maild",
+  "description": "This extension makes embedding emails beatifull",
+  "version": "1.0",
+  "background": {
+      "page": "background.html"
+    }, 
+  "page_action": {
+    "default_icon": "icon.png",
+  },
+  "permissions": ["tabs", "http://*/*", "background"]
+}
