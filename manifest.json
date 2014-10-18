@@ -8,7 +8,13 @@
       "page": "background.html"
     }, 
   "page_action": {
-    "default_icon": "icon.png",
+    "default_icon": "icon.png"
   },
-  "permissions": ["tabs", "http://*/*", "background"]
+  "permissions": ["tabs", "http://*/*", "background"],
+  "content_scripts": [
+    {
+      "matches": ["https://mail.google.com/*"],
+      "js": ["contentscript.js"]
+    }
+  ]
 }
