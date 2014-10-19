@@ -46,15 +46,26 @@ var createJSON = function(email) {
 
 var handleResponse = function(response){
   var link = "<iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe>" ;
-  var iframeLink = "<div style='margin-bottom:15px'><div style='vertical-align: super; margin-right: 12px; display: inline-block'>Your embed is ready: </div><div class='addthis_sharing_toolbox' data-url='http://maild.co/" + response.id + "' data-title='" + response.subject + "' style='display:inline-block'></div></div><script type='text/javascript' src='//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5442ede42c50d0e1' async></script><iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe><br><br>Embed by copying the following snippet<br><textArea class='example_code' style='background:#EEEEEE;'>" + link + "</textArea>";
+  var iframeLink = "<div style='margin-bottom:15px'><div style='vertical-align: super; color: black; margin-right: 12px; margin-left: 7px; display: inline-block;' ><span style='font-size: 35px;'><b style='font-size: 35px;'>Maild.</b></span><br> Use this <span id='showSnippet'><b>snippet</b></span> to embed or click on your platform of choice: </div> <textArea id='thecodesnippet' class='example_code' style='background:#EEEEEE;'>" + link + "</textArea> <div class='addthis_sharing_toolbox' data-url='http://maild.co/" + response.id + "' data-title='" + response.subject + "' style='display:inline-block'></div></div><script type='text/javascript' src='//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5442ede42c50d0e1' async></script><iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe><br><br>Embed by copying the following snippet<br><textArea class='example_code' style='background:#EEEEEE;'>" + link + "</textArea>";
   vex.open({
-    message: 'This is how your email will look with maild: ',
+    message: 'This is how your email will look with maild: ',  
     content: iframeLink,
     callback: function(value) {
       return console.log(value ? 'Successfully destroyed the planet.' : 'Chicken.');
     }
   });
-
+  var snippet =  $('#thecodesnippet');
+  snippet.hide();
+  $('#showSnippet').on('click', function(){
+    $('#thecodesnippet').show();
+  });
+  // var iframe = $(".vex-content").find('iframe')[0];
+  // console.log("this my main man!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+  // console.log(iframe);
+  // var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
+  // console.log(innerDoc);
+  // var boxHeight = innerDoc.find('.roboto');
+  // console.log(boxHeight);
 
 };
 
