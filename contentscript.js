@@ -46,7 +46,7 @@ var createJSON = function(email) {
 
 var handleResponse = function(response){
   var link = "<iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe>" ;
-  var iframeLink = "<div style='margin-bottom:15px'><div style='vertical-align: super; color: black; margin-right: 12px; margin-left: 7px; display: inline-block;' ><span style='font-size: 35px;'><b style='font-size: 35px;'>Maild.</b></span><br> Use this <span id='showSnippet'><b>snippet</b></span> to embed or click on your platform of choice: </div> <textArea id='thecodesnippet' class='example_code' style='background:#EEEEEE;'>" + link + "</textArea> <div class='addthis_sharing_toolbox' data-url='http://maild.co/" + response.id + "' data-title='" + response.subject + "' style='display:inline-block'></div></div><script type='text/javascript' src='//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5442ede42c50d0e1' async></script><iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe><br><br>Embed by copying the following snippet<br><textArea class='example_code' style='background:#EEEEEE;'>" + link + "</textArea>";
+  var iframeLink = "<div style='margin-bottom:15px'><div style='vertical-align: super; color: black; margin-right: 12px; margin-left: 7px; display: inline-block;' >Share this email: <div class='addthis_sharing_toolbox' data-url='http://maild.co/" + response.id + "' data-title='" + response.subject + "' style='display:inline-block; vertical-align:middle;'></div><span id='showSnippet'> View<b> embed code. </b></span> </div></div><div style='vertical-align:middle'><script type='text/javascript' src='//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5442ede42c50d0e1' async></div></script><textArea id='thecodesnippet' class='example_code' style='background:#EEEEEE;'>" + link + "</textArea> <iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe>";
   vex.open({
     message: 'This is how your email will look with maild: ',  
     content: iframeLink,
@@ -119,8 +119,10 @@ var insertButtons = function() {
     for (var i = 0; i < bars.length; i++) {
         var element = bars.item(i);
         if (!element.hasAttribute("data-maild-button-added")) {
-            element.setAttribute("data-maild-button-added", "true");
+            console.log(maildButton);
             $(element).append(maildButton);
+            element.setAttribute("data-maild-button-added", "true");
+
         }
     }
 };
