@@ -11,14 +11,13 @@ var getData = function(JSONObject, sendResponse) {
             data: JSON.stringify(JSONObject)
         })
         .done(function(data) {
-            alert("Success: " + data);
-            alert("reponse json: " + JSON.stringify(data));
+            // alert("Success!");
             sendResponse({
                 farewell: data
             });
         })
         .fail(function(data) {
-            alert("eroorrrr");
+            alert("eroorrrr!");
             dfd.reject(data);
         });
 };
@@ -29,8 +28,6 @@ chrome.runtime.onMessage.addListener(
             "from a content script:" + sender.tab.url :
             "from the extension");
         if (request.greeting == "maildButtonClicked") {
-            console.log(request.greeting);
-            console.log(request.emailData);
             var JSONObject = request.emailData;
             getData(JSONObject, sendResponse);
         }

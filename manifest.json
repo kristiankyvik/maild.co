@@ -14,16 +14,15 @@
   "content_scripts": [
     {
       "matches": ["https://mail.google.com/*"],
-      "js": ["jquery-2.1.1.min.js", "vex.combined.min.js", "contentscript.js"],
-      "css": [    
-        "style/vex-theme-os.css",
-        "style/vex.css"
+      "js": ["jquery-2.1.1.min.js", "vex.combined.min.js", "contentscript.js", "moment.min.js"],
+      "css": [
+        "style/vex.css",    
+        "style/vex-theme-os.css"
         ]
     }
   ],
   "web_accessible_resources": [
-    "style/vex-theme-os.css",
-    "style/vex.css"
+    "https://ct1.addthis.com/static/r07/core159.js"
   ]
 }
 

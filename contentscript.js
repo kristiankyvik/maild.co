@@ -34,44 +34,37 @@ var createJSON = function(email) {
     var emailSubject = $("title")[0].innerHTML.split("-")[0].trim();
     console.log(emailSubject);
     jsonData["subject"] = emailSubject;
-
-    var emailBody = $(email).find('.a3s')[0].innerHTML;
+    var emailBody = $(email).find('.a3s')[0].firstChild.innerHTML;
     console.log(email);
-    console.log(emailBody);
     jsonData["body"] = emailBody;
-
     var dateString = $(email).find('.g3').attr("title") + " UTC";
-    var unformattedDate = new Date(dateString);
-    var formattedDate = unformattedDate.toISOString();
-    jsonData["dateAndTime"] = formattedDate;
+    var formattedDate = moment(dateString).format();
+    jsonData["sent_date"] = formattedDate;
     console.log(jsonData);
-    // var jqxhr =
-    //     $.ajax({
-    //         type:"POST",
-    //         url: 'http://maild.co/api/emails',
-    //         dataType: 'json',
-    //         data: jsonData
-
-    //     })
-    //     .done (function(data) { alert("Success: " + data.param1) ; })
-    //     .fail   (function(data)     { console.log(data)   ; })
-    //     ;
-
     return jsonData;
+};
 
-
-
+var handleResponse = function(response){
+  var link = "<iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe>" ;
+  var iframeLink = "<div style='margin-bottom:15px'><div style='vertical-align: super; margin-right: 12px; display: inline-block'>Your embed is ready: </div><div class='addthis_sharing_toolbox' data-url='http://maild.co/" + response.id + "' data-title='" + response.subject + "' style='display:inline-block'></div></div><script type='text/javascript' src='//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5442ede42c50d0e1' async></script><iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe><br><br>Embed by copying the following snippet<br><textArea class='example_code' style='background:#EEEEEE;'>" + link + "</textArea>";
+  vex.open({
+    message: 'This is how your email will look with maild: ',
+    content: iframeLink,
+    callback: function(value) {
+      return console.log(value ? 'Successfully destroyed the planet.' : 'Chicken.');
+    }
+  });
 
 
 };
-
 
 var sendJSONToBackground = function(JSONObject) {
     chrome.runtime.sendMessage({
         greeting: "maildButtonClicked",
         emailData: JSONObject
     }, function(response) {
-        console.log(response);
+        handleResponse(response.farewell);
+        console.log(response.farewell);
     });
 
 };
@@ -93,17 +86,16 @@ var setAttributes = function(el, attrs) {
 
 
 var createMaildButton = function() {
-    var innerMarkup = '<img class="T-I-J3" role="button" src="https://theblockheads.net/forum/attachment.php?attachmentid=4664&d=1375737045" alt="">'
+    var innerMarkup = 'Share'
     var maildButton = document.createElement('div');
     setAttributes(maildButton, {
         'id': "maild-button",
-        "class": "T-I J-J5-Ji T-I-Js-IF aaq T-I-ax7 L3 T-I-Zf-aw2",
+        "class": "T-I J-J5-Ji aaq T-I-ax7 L3 T-I-Zf-aw2",
         "role": "button",
         "tabindex": "0",
-        "data-tooltip": "Create a mailder",
+        "data-tooltip": "Share or embed this email",
         "aria-label": "Maild",
-        "style": "-webkit-user-select: none;"
-    });
+        "style": "color: #fff; margin-left: 5px; margin-right: 0; background-color: #16BE18; background-image: -webkit-linear-gradient(top,#09DD44,#13B21B); background-image: linear-gradient(top,#4d90fe,#4787ed); border: 1px solid #16B005;"});
     maildButton.innerHTML = innerMarkup;
     maildButton = addRedirectToButton(maildButton);
     return maildButton;
@@ -117,7 +109,7 @@ var insertButtons = function() {
         var element = bars.item(i);
         if (!element.hasAttribute("data-maild-button-added")) {
             element.setAttribute("data-maild-button-added", "true");
-            element.insertBefore(maildButton, element.firstChild);
+            $(element).append(maildButton);
         }
     }
 };
@@ -133,7 +125,6 @@ var checkForEmailBars = function() {
 };
 
 var checkDateTime = function() {
-    console.log("empeze ========")
     if (!Date.prototype.toISOString) {
         (function() {
 
@@ -157,7 +148,6 @@ var checkDateTime = function() {
 
         }());
     }
-    console.log("acabe ========");
 };
 var init = function() {
     vex.defaultOptions.className = 'vex-theme-os';
