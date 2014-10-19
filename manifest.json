@@ -2,7 +2,7 @@
   "manifest_version": 2,
 
   "name": "Maild",
-  "description": "This extension makes embedding emails beatifull",
+  "description": "Share and embed your emails",
   "version": "0.1",
   "background": {
       "scripts": ["jquery-2.1.1.min.js", "backgroundscript.js"]
@@ -10,7 +10,7 @@
   "page_action": {
     "default_icon": "icon.png"
   },
-  "permissions": ["tabs", "http://*/*", "background"],
+  "permissions": ["tabs", "https://mail.google.com/*", "background"],
   "content_scripts": [
     {
       "matches": ["https://mail.google.com/*"],
