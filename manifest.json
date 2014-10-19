@@ -3,10 +3,10 @@
 
   "name": "Maild",
   "description": "This extension makes embedding emails beatifull",
-  "version": "1.0",
+  "version": "0.1",
   "background": {
       "scripts": ["jquery-2.1.1.min.js", "backgroundscript.js"]
-    }, 
+    },
   "page_action": {
     "default_icon": "icon.png"
   },
@@ -16,7 +16,7 @@
       "matches": ["https://mail.google.com/*"],
       "js": ["jquery-2.1.1.min.js", "vex.combined.min.js", "contentscript.js", "moment.min.js"],
       "css": [
-        "style/vex.css",    
+        "style/vex.css",
         "style/vex-theme-os.css"
         ]
     }
