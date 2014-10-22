@@ -5,30 +5,34 @@
  * @param  {[DOM Element]} email
  * @return {[JSON Object]}
  */
-var createJSON = function(email) {
-    var jsonData = {};
-    var senderInfo = $(email).find('.gD');
-    var senderName = senderInfo.attr('name')
-    var senderEmail = senderInfo.attr('email');
-    jsonData["from"] = {
-        "name": senderName,
-        "email": senderEmail
-    };
 
-    var receiversInfo = $(email).find('.g2');
-    jsonData["to"] = [];
-    receiversInfo.each(function() {
-        var receiverName = $(this).attr('name');
-        var receiverEmail = $(this).attr('email');
-        jsonData["to"].push({
-            "name": receiverName,
-            "email": receiverEmail
-        });
-    });
 
-    var ccInfo = $(email).find('.g2.ac2');
+var getSenderInfo = function(email, jsonData){
+  var senderInfo = $(email).find('.gD');
+  var senderName = senderInfo.attr('name')
+  var senderEmail = senderInfo.attr('email');
+  jsonData["from"] = {
+      "name": senderName,
+      "email": senderEmail
+  };
+};
+
+var getReceiversInfo = function(email, jsonData){
+  var receiversInfo = $(email).find('.g2');
+  jsonData["to"] = [];
+  receiversInfo.each(function() {
+      var receiverName = $(this).attr('name');
+      var receiverEmail = $(this).attr('email');
+      jsonData["to"].push({
+          "name": receiverName,
+          "email": receiverEmail
+      });
+  });
+};
+
+var getCCInfo = function(email, jsonData){
+  var ccInfo = $(email).find('.g2.ac2');
     jsonData["cc"] = [];
-    console.log(ccInfo);
     ccInfo.each(function() {
         var ccName = $(this).attr('name');
         var ccEmail = $(this).attr('email');
@@ -37,20 +41,42 @@ var createJSON = function(email) {
             "email": ccEmail
         });
     });
+};
 
-    var emailSubject = $("title")[0].innerHTML.split("-")[0].trim();
-    console.log(emailSubject);
-    jsonData["subject"] = emailSubject;
-    var emailBody = $(email).find('.a3s')[0].firstChild.innerHTML;
-    console.log(email);
-    jsonData["body"] = emailBody;
+var getEmailSubject = function(){
+  var emailSubject = $("title")[0].innerHTML.split("-")[0].trim();
+  jsonData["subject"] = emailSubject;
+};
+
+var getEmailBody = function() {
+  var temporalDiv =  $("<div>", {id: "temporalDiv"}).css("display", "none").appendTo("body");
+  var emailContent = $(email).find('.a3s')[0]
+  $(emailContent).clone().appendTo("#temporalDiv");
+  $("#temporalDiv").find(".gmail_extra").remove();
+  $("#temporalDiv").find(".gmail_quote").remove();
+  var emailBodyInnerHtml =  $("#temporalDiv").html();
+  $("#temporalDiv").remove();
+  jsonData["body"] = emailBodyInnerHtml;
+  return emailBodyInnerHtml;
+};
+
+var createJSON = function(email) {
+    /*
+    Initiliaze the JSON object that will contain all the email info
+     */
+    var jsonData = {};
+    var senderInfo = getSenderInfo(email, jsonData)
+    var receiversInfo = getReceiversInfo(email, jsonData);
+    var ccInfo = getCCInfo();
+    var emailSubject = getEmailSubject();
+    var emailBody = getEmailBody();
+
+  
     var dateString = $(email).find('.g3').attr("title") + " UTC";
     var formattedDate = moment(dateString).format();
     jsonData["sent_date"] = formattedDate;
-    console.log(jsonData);
     return jsonData;
 };
-
 
 /**
  * [handleResponse will ahndle the response sent by th background script. It will retrieve
@@ -91,7 +117,6 @@ var sendJSONToBackground = function(JSONObject) {
         handleResponse(response.farewell);
         console.log(response.farewell);
     });
-
 };
 
 /**
@@ -102,7 +127,7 @@ var sendJSONToBackground = function(JSONObject) {
  */
 var addRedirectToButton = function(button) {
     button.addEventListener("click", function(e) {
-        var email = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
+        var email = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode;
         var JSONObject = createJSON(email);
         sendJSONToBackground(JSONObject);
     })
@@ -151,13 +176,17 @@ var createMaildButton = function() {
  */
 var insertButtons = function() {
     var bars = $(".gH.acX");
-    var maildButton = createMaildButton();
-    bars.each(function() {
-      var attr = $(this).attr('data-maild-button-added');
-      if (typeof attr == typeof undefined || attr == false) {
-          $(this).append(maildButton);
-          $(this).attr("data-maild-button-added", "true");
-      }
+    var is_button_exist;
+    bars.each(function( index, element ) {
+      var attr = $(element).attr('data-maild-button-added');
+      if (typeof attr === 'undefined' || attr === false) {
+        var maildButton = createMaildButton();
+          $(element).append(maildButton);
+          is_button_exist = $(element).find('#maild-button').length;
+          if (is_button_exist) {
+            $(element).attr("data-maild-button-added", "true");
+          }  
+      }   
     });
 
 };
@@ -217,7 +246,6 @@ var checkDateTime = function() {
 var init = function() {
     vex.defaultOptions.className = 'vex-theme-os';
     checkDateTime();
-    console.log("hi from content script!");
     setInterval(function() {
         checkForEmailBars();
     }, 500);
