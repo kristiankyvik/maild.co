@@ -225,7 +225,6 @@
   box-sizing: border-box;
 }
 
-
 /* line 14, ../sass/vex.sass */
 .vex {
   position: fixed;
@@ -254,7 +253,7 @@
   -o-animation: vex-fadein 0.5s;
   -webkit-backface-visibility: hidden;
   position: fixed;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.8);
   top: 0;
   right: 0;
   bottom: 0;

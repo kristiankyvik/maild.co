@@ -1,25 +1,29 @@
+
 /**
- * [createJSON navigates the email and retrieves all the relevant 
- * information we want to retrieve from the email, and adds it to 
- * JSON object]
- * @param  {[DOM Element]} email
- * @return {[JSON Object]}
+ * [getSenderInfo retrives info related to the sender]
+ * @param  {[type]} email
+ * @param  {[type]} jsonData
+ * @return {[type]}
  */
-
-
-var getSenderInfo = function(email, jsonData){
-  var senderInfo = $(email).find('.gD');
+var getSenderInfo = function(emailElement){
+  var senderInfo = $(emailElement).find('.gD');
   var senderName = senderInfo.attr('name')
   var senderEmail = senderInfo.attr('email');
-  jsonData["from"] = {
+  return {
       "name": senderName,
       "email": senderEmail
   };
 };
 
-var getReceiversInfo = function(email, jsonData){
+/**
+ * [getReceiversInfo description]
+ * @param  {[type]} email
+ * @param  {[type]} jsonData
+ * @return {[type]}
+ */
+var getReceiversInfo = function(email){
   var receiversInfo = $(email).find('.g2');
-  jsonData["to"] = [];
+  var arrayOfTOs = [];
   receiversInfo.each(function() {
       var receiverName = $(this).attr('name');
       var receiverEmail = $(this).attr('email');
@@ -28,11 +32,18 @@ var getReceiversInfo = function(email, jsonData){
           "email": receiverEmail
       });
   });
+  return arrayOfTOs;
 };
 
-var getCCInfo = function(email, jsonData){
+/**
+ * [getCCInfo description]
+ * @param  {[type]} email
+ * @param  {[type]} jsonData
+ * @return {[type]}
+ */
+var getCCInfo = function(email){
   var ccInfo = $(email).find('.g2.ac2');
-    jsonData["cc"] = [];
+  var arrayOfCCs = [];
     ccInfo.each(function() {
         var ccName = $(this).attr('name');
         var ccEmail = $(this).attr('email');
@@ -41,14 +52,27 @@ var getCCInfo = function(email, jsonData){
             "email": ccEmail
         });
     });
+    return arrayOfCCs;
 };
 
-var getEmailSubject = function(){
+/**
+ * [getEmailSubject description]
+ * @param  {[type]} email
+ * @param  {[type]} jsonData
+ * @return {[type]}
+ */
+var getEmailSubject = function(email){
   var emailSubject = $("title")[0].innerHTML.split("-")[0].trim();
-  jsonData["subject"] = emailSubject;
+  return emailSubject;
 };
 
-var getEmailBody = function() {
+/**
+ * [getEmailBody description]
+ * @param  {[type]} email
+ * @param  {[type]} jsonData
+ * @return {[type]}
+ */
+var getEmailBody = function(email) {
   var temporalDiv =  $("<div>", {id: "temporalDiv"}).css("display", "none").appendTo("body");
   var emailContent = $(email).find('.a3s')[0]
   $(emailContent).clone().appendTo("#temporalDiv");
@@ -56,25 +80,39 @@ var getEmailBody = function() {
   $("#temporalDiv").find(".gmail_quote").remove();
   var emailBodyInnerHtml =  $("#temporalDiv").html();
   $("#temporalDiv").remove();
-  jsonData["body"] = emailBodyInnerHtml;
   return emailBodyInnerHtml;
 };
 
+/**
+ * [getDateAndTime description]
+ * @param  {[type]} email
+ * @param  {[type]} jsonData
+ * @return {[type]}
+ */
+var getDateAndTime = function(email) {
+  var dateString = $(email).find('.g3').attr("title") + " UTC";
+  var formattedDate = moment(dateString).format();
+  return formattedDate;
+};
+
+/**
+ * [createJSON navigates the email and retrieves all the relevant 
+ * information we want to retrieve from the email, and adds it to 
+ * JSON object]
+ * @param  {[DOM Element]} email
+ * @return {[JSON Object]}
+ */
 var createJSON = function(email) {
     /*
     Initiliaze the JSON object that will contain all the email info
      */
     var jsonData = {};
-    var senderInfo = getSenderInfo(email, jsonData)
-    var receiversInfo = getReceiversInfo(email, jsonData);
-    var ccInfo = getCCInfo();
-    var emailSubject = getEmailSubject();
-    var emailBody = getEmailBody();
-
-  
-    var dateString = $(email).find('.g3').attr("title") + " UTC";
-    var formattedDate = moment(dateString).format();
-    jsonData["sent_date"] = formattedDate;
+    var jsonData["from"] = getSenderInfo(email)
+    var jsonData["to"] = getReceiversInfo(email);
+    var jsonData["cc"] = getCCInfo(email);
+    var jsonData["subject"] = getEmailSubject(email);
+    var jsonData["body"] = getEmailBody(email);
+    var jsonData["sent_date"] = getDateAndTime(email);
     return jsonData;
 };
 
@@ -250,7 +288,5 @@ var init = function() {
         checkForEmailBars();
     }, 500);
 }
-
-
 
 window.onload = init();
