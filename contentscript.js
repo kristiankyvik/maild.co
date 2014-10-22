@@ -1,3 +1,10 @@
+/**
+ * [createJSON navigates the email and retrieves all the relevant 
+ * information we want to retrieve from the email, and adds it to 
+ * JSON object]
+ * @param  {[DOM Element]} email
+ * @return {[JSON Object]}
+ */
 var createJSON = function(email) {
     var jsonData = {};
     var senderInfo = $(email).find('.gD');
@@ -44,6 +51,13 @@ var createJSON = function(email) {
     return jsonData;
 };
 
+
+/**
+ * [handleResponse will ahndle the response sent by th background script. It will retrieve
+ * the HTML code, and create an iframe within a modal to display the result to the user]
+ * @param  {[JSON Object]} response
+ * @return {[none]}
+ */
 var handleResponse = function(response){
   var link = "<iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe>" ;
   var iframeLink = "<div style='margin-bottom:15px'><div style='vertical-align: super; color: black; margin-right: 12px; margin-left: 7px; display: inline-block;' >Share this email: <div class='addthis_sharing_toolbox' data-url='http://maild.co/" + response.id + "' data-title='" + response.subject + "' style='display:inline-block; vertical-align:middle;'></div><span id='showSnippet'> View<b> embed code. </b></span> </div></div><div style='vertical-align:middle'><script type='text/javascript' src='//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5442ede42c50d0e1' async></div></script><textArea id='thecodesnippet' class='example_code' style='background:#EEEEEE;'>" + link + "</textArea> <iframe src='https://maild.co/embed/" + response.id + "' style='border:0; width: 100%; height:500px;'></iframe>";
@@ -59,16 +73,16 @@ var handleResponse = function(response){
   $('#showSnippet').on('click', function(){
     $('#thecodesnippet').show();
   });
-  // var iframe = $(".vex-content").find('iframe')[0];
-  // console.log("this my main man!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-  // console.log(iframe);
-  // var innerDoc = iframe.contentDocument || iframe.contentWindow.document;
-  // console.log(innerDoc);
-  // var boxHeight = innerDoc.find('.roboto');
-  // console.log(boxHeight);
 
 };
 
+/**
+ * [sendJSONToBackground is the action that is called when the button is clicked.
+ * It essentially sends a message to the background script with a JSON that
+ * contains all the information extracted from the email]
+ * @param  {[JSON Object]} JSONObject
+ * @return {[none]}
+ */
 var sendJSONToBackground = function(JSONObject) {
     chrome.runtime.sendMessage({
         greeting: "maildButtonClicked",
@@ -80,6 +94,12 @@ var sendJSONToBackground = function(JSONObject) {
 
 };
 
+/**
+ * [addRedirectToButton takes the button as a parameter and simply adds
+ * a listener to it. It also retrieves the entire email and call the fucntion
+ * creaetJSON(email)]
+ * @param {[type]} button
+ */
 var addRedirectToButton = function(button) {
     button.addEventListener("click", function(e) {
         var email = e.target.parentNode.parentNode.parentNode.parentNode.parentNode.parentNode
@@ -89,13 +109,24 @@ var addRedirectToButton = function(button) {
     return button;
 };
 
+/**
+ * [setAttributes is a helper function that allows us to assign various
+ * values to attributes by specifying one specific DOM element and a hash
+ * containing attributes as keys and attr-value as values]
+ * @param {[DOM element]} el
+ * @param {[Hash]} attrs
+ */
 var setAttributes = function(el, attrs) {
     for (var key in attrs) {
         el.setAttribute(key, attrs[key]);
     }
 };
 
-
+/**
+ * [createMaildButton creates a new DOM element, the button, and adds
+ * all the appropiate classes to it]
+ * @return {[DOM Element]}
+ */
 var createMaildButton = function() {
     var innerMarkup = 'Share'
     var maildButton = document.createElement('div');
@@ -112,22 +143,30 @@ var createMaildButton = function() {
     return maildButton;
 };
 
-
+/**
+ * [insertButtons retrieves the the bars and loops thorugh them,
+ * inserting a button in each bar, and adding an attribute
+ * "data-maild-button-added", "true", to remember the button has been added.]
+ * @return {[none]}
+ */
 var insertButtons = function() {
-    var bars = document.getElementsByClassName("gH acX");
+    var bars = $(".gH.acX");
     var maildButton = createMaildButton();
-    for (var i = 0; i < bars.length; i++) {
-        var element = bars.item(i);
-        if (!element.hasAttribute("data-maild-button-added")) {
-            console.log(maildButton);
-            $(element).append(maildButton);
-            element.setAttribute("data-maild-button-added", "true");
+    bars.each(function() {
+      var attr = $(this).attr('data-maild-button-added');
+      if (typeof attr == typeof undefined || attr == false) {
+          $(this).append(maildButton);
+          $(this).attr("data-maild-button-added", "true");
+      }
+    });
 
-        }
-    }
 };
 
-
+/**
+ * [checkForEmailBars looks for emails bars and check if they are more than zero,
+ * meaning he compose window has been loaded, it runt the insertButton function ]
+ * @return {[none]}
+ */
 var checkForEmailBars = function() {
     var bars = document.getElementsByClassName("gH acX");
     if (bars.length == 0) {
@@ -137,6 +176,11 @@ var checkForEmailBars = function() {
     }
 };
 
+/**
+ * [checkDateTime simply makes sure the method toISOString is available
+ * If not available it will buld it as a extension to the prototype]
+ * @return {[none]}
+ */
 var checkDateTime = function() {
     if (!Date.prototype.toISOString) {
         (function() {
@@ -162,6 +206,14 @@ var checkDateTime = function() {
         }());
     }
 };
+/**
+ * [init will run once the window is fully loaded,
+ * will set the appropiate theme for the modal library
+ * and will also check if all the libraries we plan to use loaded.
+ * init will also start running the function checkForEmailBars
+ * every half second ]
+ * @return {[none]}
+ */
 var init = function() {
     vex.defaultOptions.className = 'vex-theme-os';
     checkDateTime();
@@ -170,7 +222,6 @@ var init = function() {
         checkForEmailBars();
     }, 500);
 }
-
 
 
 
