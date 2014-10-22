@@ -15,18 +15,13 @@
   "content_scripts": [
     {
       "matches": ["https://mail.google.com/*"],
-      "js": ["jquery-2.1.1.min.js", "addthis.js", "layers081.js", "core159.js", "vex.combined.min.js", "contentscript.js", "moment.min.js"],
+      "js": ["jquery-2.1.1.min.js", "vex.combined.min.js", "contentscript.js", "moment.min.js"],
       "css": [
         "style/vex.css",
         "style/vex-theme-os.css"
         ]
     }
-  ],
-  "web_accessible_resources": [
-    "addthis.js",
-    "https://ct1.addthis.com/static/r07/core159.js"
-  ],
-  "content_security_policy": "script-src 'self' https://ct1.addthis.com/; object-src 'self'"
+  ]
 }
 
 
